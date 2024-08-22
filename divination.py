@@ -1,76 +1,62 @@
 from random import randint
 
 def mod(a, b):
-    rem = a % b
-    if rem == 0:
-        rem = b
-    return rem
+    """計算 a 除以 b 的餘數，如果餘數為 0，返回 b"""
+    return a % b or b
 
-# 四營而成易
 def ying_4(pile):
+    """四營而成易"""
     # 分而為二以象兩
     pile_right = randint(1, pile - 1)
     pile_left = pile - pile_right
 
-    # print(pile_right, pile_left)
-
     # 掛一以象三
     if randint(0, 1) == 0:
-        pile_left = pile_left - 1
+        pile_left -= 1
     else:
-        pile_right = pile_right - 1
-
-    # print(pile_right, pile_left)
+        pile_right -= 1
 
     # 揲之以四以象四時，歸奇於扐以象閏
-    mod_right = mod(pile_right, 4)
-    mod_left = mod(pile_left, 4)
+    hand = 1 + mod(pile_right, 4) + mod(pile_left, 4)
+    return pile - hand
 
-    # print(mod_right, mod_left)
-
-    hand = 1 + mod_right + mod_left
-
-    pile = pile - hand
-
-    # print(hand)
-    # print("{}\n".format(pile))
-
-    return pile
-
-# 三變而成爻
 def var_3():
-    # 大衍之數五十，其用四十有九
-    total = 50
-    pile = total -1
-
-    for i in range(3):
+    """三變而成爻"""
+    pile = 49  # 大衍之數五十，其用四十有九
+    for _ in range(3):
         pile = ying_4(pile)
-    return pile
+    return pile // 4
 
-yao_list = []
-for i in range(6):
-    yao_list.append(var_3() // 4)
+def calculate_probabilities():
+    """計算爻的機率"""
+    prob_6 = (7 / 15) * (9 / 19) * (11 / 47)
+    prob_7 = ((8 / 17) * (10 / 21) * (36 / 47) + (10 / 19) * (11 / 47)) + (8 / 15) * (9 / 19) * (11 / 47)
+    prob_8 = (9 / 19) * (11 / 21) * (36 / 47) + ((9 / 17) * (10 / 21) * (36 / 47) + (10 / 19) * (11 / 47))
+    prob_9 = (10 / 19) * (11 / 21) * (36 / 47)
+    return prob_6, prob_7, prob_8, prob_9
 
-print("{}\n".format(yao_list))
+# 計算機率
+prob_6, prob_7, prob_8, prob_9 = calculate_probabilities()
+yao_prob = [prob_6, prob_7, prob_8, prob_9]
 
-prob_6 = (7/15)*(9/19)*(11/47)
-prob_7 = ((8/17)*(10/21)*(36/47)+(10/19)*(11/47))+(8/15)*(9/19)*(11/47)
-prob_8 = (9/19)*(11/21)*(36/47)+((9/17)*(10/21)*(36/47)+(10/19)*(11/47))
-prob_9 = (10/19)*(11/21)*(36/47)
+# 十有八變而成卦
+yao_list = [var_3() for _ in range(6)]
 
+# 組合成卦象
 yao_quo = [6, 7, 8, 9]
 yao_origin = ["--", "－", "--", "－"]
 yao_var = ["－", "－", "--", "--"]
-yao_prob = [prob_6, prob_7, prob_8, prob_9]
-yao_content = [list(a) for a in zip(yao_origin, yao_var, yao_prob)]
+yao_dict = dict(zip(yao_quo, zip(yao_origin, yao_var, yao_prob)))
 
-yao_dict = dict(zip(yao_quo, yao_content))
-# print(yao_dict)
+def print_results(yao_list, yao_dict):
+    """顯示本卦、變卦及其機率"""
+    print("本卦\t\t變卦")
+    total_prob = 1.0
+    for yao in reversed(yao_list):
+        origin, var, prob_yao = yao_dict.get(yao, ("--", "--", 0))
+        print(f"{origin}\t\t{var}\n")
+        total_prob *= prob_yao
 
-print("本卦\t\t變卦")
-prob = 1
-for yao in reversed(yao_list):
-    print("{}\t\t{}\n".format(yao_dict.get(yao)[0], yao_dict.get(yao)[1]))
-    prob = prob * yao_dict[yao][2]
+    print(f"probability: {total_prob:.4%}\n")
 
-print("probability: {:.4%}\n".format(prob))
+print_results(yao_list, yao_dict)

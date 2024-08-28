@@ -52,9 +52,8 @@ yao_dict = dict(zip(yao_quo, zip(yao_origin, yao_var, yao_prob)))
 user_question = input("冥想問題或輸入後Enter: ")
 
 def print_results(yao_list, yao_dict):
-    if user_question:
-        print(f"您的問題是：{user_question}\n")
-    """顯示本卦、變卦及其機率"""
+    """顯示本卦、變卦及機率"""
+    print(f"\n得到的卦是：\n{yao_list}\n")
     print("本卦\t\t變卦")
     total_prob = 1.0
     for yao in reversed(yao_list):

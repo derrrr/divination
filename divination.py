@@ -1,3 +1,4 @@
+import colorama
 from random import randint
 
 def mod(a, b):
@@ -48,8 +49,9 @@ yao_origin = ["--", "－", "--", "－"]
 yao_var = ["－", "－", "--", "--"]
 yao_dict = dict(zip(yao_quo, zip(yao_origin, yao_var, yao_prob)))
 
-
 user_question = input("冥想問題或輸入後Enter: ")
+
+colorama.init()
 
 def print_results(yao_list, yao_dict):
     """顯示本卦、變卦及機率"""
@@ -58,7 +60,10 @@ def print_results(yao_list, yao_dict):
     total_prob = 1.0
     for yao in reversed(yao_list):
         origin, var, prob_yao = yao_dict.get(yao, ("--", "--", 0))
-        print(f"{origin}\t\t{var}\n")
+        if yao in [6, 9]:
+            print(f"\033[38;5;167m{origin}\t\t{var}\033[0m\n")
+        else:
+            print(f"{origin}\t\t{var}\n")
         total_prob *= prob_yao
 
     print(f"probability: {total_prob:.4%}\n")
